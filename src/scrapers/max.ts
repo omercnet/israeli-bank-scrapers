@@ -10,6 +10,9 @@ import { fixInstallments, sortTransactionsByDate, filterOldTransactions } from '
 import { Transaction, TransactionStatuses, TransactionTypes } from '../transactions';
 import { ScaperOptions, ScraperCredentials } from './base-scraper';
 
+interface ScrapedDealData {
+  arn: string;
+}
 
 interface ScrapedTransaction {
   shortCardNumber: string;
@@ -21,6 +24,7 @@ interface ScrapedTransaction {
   planName: string;
   comments: string;
   merchantName: string;
+  dealData: ScrapedDealData;
 }
 
 const BASE_ACTIONS_URL = 'https://online.max.co.il';
@@ -117,6 +121,7 @@ function mapTransaction(rawTransaction: ScrapedTransaction): Transaction {
 
   return {
     type: getTransactionType(rawTransaction.planName),
+    identifier: BigInt(rawTransaction.dealData.arn),
     date: moment(rawTransaction.purchaseDate).toISOString(),
     processedDate,
     originalAmount: -rawTransaction.originalAmount,
